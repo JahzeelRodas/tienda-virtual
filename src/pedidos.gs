@@ -28,3 +28,52 @@ function crearPedido(payload) {
 
   return true;
 }
+
+
+function onFormSubmit(e) {
+
+  if (!e || !e.range) {
+    Logger.log("Evento inválido");
+    return;
+  }
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const hojaRespuestas = ss.getSheetByName("RESPUESTAS_FORM");
+  const hojaProductos  = ss.getSheetByName("PRODUCTOS");
+  const hojaPedidos    = ss.getSheetByName("PEDIDOS");
+
+  const fila = e.range.getRow();
+  const datos = hojaRespuestas.getRange(fila, 1, 1, 6).getValues()[0];
+
+  const [
+    fecha,
+    productoSeleccionado,
+    cliente,
+    whatsapp,
+    metodoPago,
+    observaciones
+  ] = datos;
+
+  if (!productoSeleccionado || !cliente) {
+    Logger.log("Datos incompletos");
+    return;
+  }
+
+  const resultado = descontarStockYCalcularPrecio(productoSeleccionado);
+
+  if (!resultado) {
+    Logger.log("Producto no encontrado");
+    return;
+  }
+
+  hojaPedidos.appendRow([
+    new Date(),
+    productoSeleccionado,
+    cliente,
+    whatsapp,
+    metodoPago,
+    resultado.precio,
+    "PENDIENTE"
+  ]);
+}
