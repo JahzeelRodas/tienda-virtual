@@ -21,7 +21,6 @@ function getProductosActivos() {
 
 
 
-
 function descontarStockYCalcularPrecio(productoSeleccionado) {
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -37,11 +36,23 @@ function descontarStockYCalcularPrecio(productoSeleccionado) {
 
       let precioFinal = precio;
 
-      if (oferta) {
-        const d = parseInt(oferta.replace("%", ""));
-        precioFinal = precio - (precio * d / 100);
+      // 👉 NORMALIZAR OFERTA
+      if (oferta !== "" && oferta !== null && oferta !== false) {
+
+        let descuento = 0;
+
+        if (typeof oferta === "number") {
+          descuento = oferta;
+        } else if (typeof oferta === "string") {
+          descuento = parseInt(oferta.replace("%", ""));
+        }
+
+        if (!isNaN(descuento) && descuento > 0) {
+          precioFinal = precio - (precio * descuento / 100);
+        }
       }
 
+      // Descontar stock
       hojaProductos.getRange(i + 1, 5).setValue(stock - 1);
 
       return { precio: precioFinal };
@@ -50,3 +61,4 @@ function descontarStockYCalcularPrecio(productoSeleccionado) {
 
   return null;
 }
+
