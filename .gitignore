@@ -1,0 +1,10 @@
+# Configuración de Clasp (Contiene el Script ID)
+.clasp.json
+
+# Archivos de sistema y logs
+*.log
+.DS_Store
+Thumbs.db
+
+# Carpeta de dependencias (si llegaras a usar npm)
+node_modules/
